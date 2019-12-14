@@ -115,11 +115,21 @@ export class Vavilon {
                 if (loc === this.userLocale || loc.slice(0, 2) === this.userLocale.slice(0, 2) && !this.pageDict) {
                     this.pageDict = loc;
                     this.dictionaries[loc].load((): void => {
-                        this.pageDictLoaded = true;
-                        primaryCb();
+                        if(Object.keys(this.dictionaries[loc].strings).length === 0){
+                            console.log('removed empty dictionary ' + loc)
+                            delete this.dictionaries[loc]
+                        }else{
+                            this.pageDictLoaded = true;
+                            primaryCb();
+                        }
                     })
                 } else {
-                    this.dictionaries[loc].load()
+                    this.dictionaries[loc].load((): void => {
+                        if(Object.keys(this.dictionaries[loc].strings).length === 0){
+                            delete this.dictionaries[loc]
+                            console.log('removed empty dictionary ' + loc)
+                        }
+                    })
                 }
             });
     }
@@ -134,14 +144,38 @@ export class Vavilon {
     public setLocale(localeString: Locale): boolean {
         if (this.dictionaries[localeString]) {
             this.pageDict = localeString;
+            console.log('setting lang to ' + localeString)
             setLocaleCookie(this.pageDict);
             return true;
         } else if (this.dictionaries[localeString.slice(0, 2)]) {
             this.pageDict = localeString.slice(0, 2);
+            console.log('setting lang truncated: ' + localeString)
             setLocaleCookie(this.pageDict);
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Return
+     */
+    public getTranslation(strId: string): string {
+        if (this.pageDict) {
+            if (!this.dictionaries[this.pageDict]) {
+                console.log("Locale not found")
+                this.dictionaries[this.pageDict] = new Dictionary(null);
+            }
+
+            if (this.dictionaries[this.pageDict].hasString(strId)) {
+                return this.dictionaries[this.pageDict].strings[strId];
+            } else {
+                console.log("String key not found in " + this.pageDict)
+                return strId;
+            }
+        } else {
+            console.log("no pageDict")
+        }
+        return strId;
     }
 }

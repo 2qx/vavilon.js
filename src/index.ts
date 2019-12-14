@@ -17,6 +17,7 @@ declare global {
          * @param localeString - the locale to switch to
          */
         setLang(localeString: Locale): void;
+        ___i18n(stringKey: string): string;
     }
 }
 
@@ -46,6 +47,8 @@ window.onload = function (): void {
 
     if (vavilon.pageDictLoaded) {
         vavilon.replace();
+    }else{
+        console.log('dictionary not loaded yet')
     }
 };
 
@@ -66,4 +69,15 @@ window.setLang = function (localeString: Locale): void {
     if (changeSuccessful) {
         vavilon.replace();
     }
+};
+
+/**
+ * Get the translation for a single string
+ *
+ * Lookup a single item in the currently loaded locale dictionary
+ *
+ * @param stringKey - the dictionary key
+ */
+window.___i18n = function (stringKey: string): string {
+    return vavilon.getTranslation(stringKey)
 };
