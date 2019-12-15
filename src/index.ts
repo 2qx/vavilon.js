@@ -17,7 +17,7 @@ declare global {
          * @param localeString - the locale to switch to
          */
         setLang(localeString: Locale): void;
-        ___i18n(stringKey: string): string;
+        ___i18n(stringKey: string, args: string): string;
     }
 }
 
@@ -78,6 +78,6 @@ window.setLang = function (localeString: Locale): void {
  *
  * @param stringKey - the dictionary key
  */
-window.___i18n = function (stringKey: string): string {
-    return vavilon.getTranslation(stringKey)
+window.___i18n = function (stringKey: string, arg: string): string {
+    return vavilon.getTranslation(stringKey, arg)
 };

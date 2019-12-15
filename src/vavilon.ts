@@ -115,19 +115,17 @@ export class Vavilon {
                 if (loc === this.userLocale || loc.slice(0, 2) === this.userLocale.slice(0, 2) && !this.pageDict) {
                     this.pageDict = loc;
                     this.dictionaries[loc].load((): void => {
-                        if(Object.keys(this.dictionaries[loc].strings).length === 0){
-                            console.log('removed empty dictionary ' + loc)
+                        if (Object.keys(this.dictionaries[loc].strings).length === 0) {
                             delete this.dictionaries[loc]
-                        }else{
+                        } else {
                             this.pageDictLoaded = true;
                             primaryCb();
                         }
                     })
                 } else {
                     this.dictionaries[loc].load((): void => {
-                        if(Object.keys(this.dictionaries[loc].strings).length === 0){
+                        if (Object.keys(this.dictionaries[loc].strings).length === 0) {
                             delete this.dictionaries[loc]
-                            console.log('removed empty dictionary ' + loc)
                         }
                     })
                 }
@@ -144,12 +142,10 @@ export class Vavilon {
     public setLocale(localeString: Locale): boolean {
         if (this.dictionaries[localeString]) {
             this.pageDict = localeString;
-            console.log('setting lang to ' + localeString)
             setLocaleCookie(this.pageDict);
             return true;
         } else if (this.dictionaries[localeString.slice(0, 2)]) {
             this.pageDict = localeString.slice(0, 2);
-            console.log('setting lang truncated: ' + localeString)
             setLocaleCookie(this.pageDict);
             return true;
         }
@@ -160,21 +156,20 @@ export class Vavilon {
     /**
      * Return
      */
-    public getTranslation(strId: string): string {
+    public getTranslation(strId: string, arg: string): string {
+
         if (this.pageDict) {
             if (!this.dictionaries[this.pageDict]) {
-                console.log("Locale not found")
                 this.dictionaries[this.pageDict] = new Dictionary(null);
             }
-
-            if (this.dictionaries[this.pageDict].hasString(strId)) {
-                return this.dictionaries[this.pageDict].strings[strId];
+            let translated = this.dictionaries[this.pageDict].strings[strId] || strId;
+            if (translated.includes("%s")) {
+                return translated.replace('%s', arg || '?')
             } else {
-                console.log("String key not found in " + this.pageDict)
-                return strId;
+                return translated
             }
         } else {
-            console.log("no pageDict")
+            console.log("no pageDict for translation")
         }
         return strId;
     }
