@@ -41,8 +41,9 @@ export class Dictionary {
      * @param cb - an optional callback to be executed after loading is finished
      */
     public load(cb?: Function): void {
-        get(this.url, (r: string): void => {
-            this.strings = JSON.parse(r);
+
+        get(this.url, (response: { [id: string]: string }): void => {
+            this.strings = response;
             if (cb) cb();
         })
     }
